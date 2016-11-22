@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		84262E4E1DE46B4C00B968DE /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84262E4D1DE46B4C00B968DE /* DownloadManager.swift */; };
+		84262E501DE4750300B968DE /* TaskWithBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84262E4F1DE4750300B968DE /* TaskWithBlocks.swift */; };
 		842BF3451DDF725000DB622C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BF3441DDF725000DB622C /* AppDelegate.swift */; };
 		842BF3471DDF725000DB622C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BF3461DDF725000DB622C /* ViewController.swift */; };
 		842BF34A1DDF725000DB622C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 842BF3481DDF725000DB622C /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		84262E4D1DE46B4C00B968DE /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DownloadManager.swift; path = ../../DownloadManager.swift; sourceTree = "<group>"; };
+		84262E4F1DE4750300B968DE /* TaskWithBlocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TaskWithBlocks.swift; path = ../../TaskWithBlocks.swift; sourceTree = "<group>"; };
 		842BF3411DDF725000DB622C /* MegaDownloadManager.Swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MegaDownloadManager.Swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		842BF3441DDF725000DB622C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		842BF3461DDF725000DB622C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 		842BF3431DDF725000DB622C /* MegaDownloadManager.Swift */ = {
 			isa = PBXGroup;
 			children = (
+				84262E4F1DE4750300B968DE /* TaskWithBlocks.swift */,
 				84262E4D1DE46B4C00B968DE /* DownloadManager.swift */,
 				842BF3561DDF72F400DB622C /* GoogleSearchPDF.swift */,
 				842BF3441DDF725000DB622C /* AppDelegate.swift */,
@@ -144,6 +147,7 @@
 			files = (
 				842BF3471DDF725000DB622C /* ViewController.swift in Sources */,
 				842BF3571DDF72F400DB622C /* GoogleSearchPDF.swift in Sources */,
+				84262E501DE4750300B968DE /* TaskWithBlocks.swift in Sources */,
 				842BF3451DDF725000DB622C /* AppDelegate.swift in Sources */,
 				84262E4E1DE46B4C00B968DE /* DownloadManager.swift in Sources */,
 			);
