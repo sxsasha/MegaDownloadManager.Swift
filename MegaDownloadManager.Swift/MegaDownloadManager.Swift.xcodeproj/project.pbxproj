@@ -15,6 +15,14 @@
 		842BF34C1DDF725000DB622C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 842BF34B1DDF725000DB622C /* Assets.xcassets */; };
 		842BF34F1DDF725000DB622C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 842BF34D1DDF725000DB622C /* LaunchScreen.storyboard */; };
 		842BF3571DDF72F400DB622C /* GoogleSearchPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BF3561DDF72F400DB622C /* GoogleSearchPDF.swift */; };
+		84DDFB351DE48E0B00085753 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB341DE48E0B00085753 /* CoreDataManager.swift */; };
+		84DDFB381DE48E6800085753 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DDFB371DE48E6800085753 /* CoreData.framework */; };
+		84DDFB3B1DE496EE00085753 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB391DE496EE00085753 /* Model.xcdatamodeld */; };
+		84DDFB401DE497C200085753 /* DataDownloadCoreData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB3C1DE497C200085753 /* DataDownloadCoreData+CoreDataClass.swift */; };
+		84DDFB411DE497C200085753 /* DataDownloadCoreData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB3D1DE497C200085753 /* DataDownloadCoreData+CoreDataProperties.swift */; };
+		84DDFB421DE497C200085753 /* SearchHistory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB3E1DE497C200085753 /* SearchHistory+CoreDataClass.swift */; };
+		84DDFB431DE497C200085753 /* SearchHistory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB3F1DE497C200085753 /* SearchHistory+CoreDataProperties.swift */; };
+		84DDFB461DE4A69000085753 /* DataDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DDFB451DE4A69000085753 /* DataDownload.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +36,14 @@
 		842BF34E1DDF725000DB622C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		842BF3501DDF725000DB622C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		842BF3561DDF72F400DB622C /* GoogleSearchPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GoogleSearchPDF.swift; path = ../../GoogleSearchPDF.swift; sourceTree = "<group>"; };
+		84DDFB341DE48E0B00085753 /* CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataManager.swift; path = ../../CoreDataManager.swift; sourceTree = "<group>"; };
+		84DDFB371DE48E6800085753 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		84DDFB3A1DE496EE00085753 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		84DDFB3C1DE497C200085753 /* DataDownloadCoreData+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DataDownloadCoreData+CoreDataClass.swift"; path = "../DataDownloadCoreData+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84DDFB3D1DE497C200085753 /* DataDownloadCoreData+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DataDownloadCoreData+CoreDataProperties.swift"; path = "../DataDownloadCoreData+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		84DDFB3E1DE497C200085753 /* SearchHistory+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SearchHistory+CoreDataClass.swift"; path = "../SearchHistory+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84DDFB3F1DE497C200085753 /* SearchHistory+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SearchHistory+CoreDataProperties.swift"; path = "../SearchHistory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		84DDFB451DE4A69000085753 /* DataDownload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataDownload.swift; path = ../../DataDownload.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84DDFB381DE48E6800085753 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +63,7 @@
 			children = (
 				842BF3431DDF725000DB622C /* MegaDownloadManager.Swift */,
 				842BF3421DDF725000DB622C /* Products */,
+				84DDFB361DE48E6800085753 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,9 +78,13 @@
 		842BF3431DDF725000DB622C /* MegaDownloadManager.Swift */ = {
 			isa = PBXGroup;
 			children = (
+				84DDFB441DE497CA00085753 /* CoreData */,
+				84DDFB391DE496EE00085753 /* Model.xcdatamodeld */,
 				84262E4F1DE4750300B968DE /* TaskWithBlocks.swift */,
 				84262E4D1DE46B4C00B968DE /* DownloadManager.swift */,
+				84DDFB341DE48E0B00085753 /* CoreDataManager.swift */,
 				842BF3561DDF72F400DB622C /* GoogleSearchPDF.swift */,
+				84DDFB451DE4A69000085753 /* DataDownload.swift */,
 				842BF3441DDF725000DB622C /* AppDelegate.swift */,
 				842BF3461DDF725000DB622C /* ViewController.swift */,
 				842BF3481DDF725000DB622C /* Main.storyboard */,
@@ -71,6 +93,25 @@
 				842BF3501DDF725000DB622C /* Info.plist */,
 			);
 			path = MegaDownloadManager.Swift;
+			sourceTree = "<group>";
+		};
+		84DDFB361DE48E6800085753 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				84DDFB371DE48E6800085753 /* CoreData.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		84DDFB441DE497CA00085753 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				84DDFB3C1DE497C200085753 /* DataDownloadCoreData+CoreDataClass.swift */,
+				84DDFB3D1DE497C200085753 /* DataDownloadCoreData+CoreDataProperties.swift */,
+				84DDFB3E1DE497C200085753 /* SearchHistory+CoreDataClass.swift */,
+				84DDFB3F1DE497C200085753 /* SearchHistory+CoreDataProperties.swift */,
+			);
+			name = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,11 +186,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84DDFB421DE497C200085753 /* SearchHistory+CoreDataClass.swift in Sources */,
 				842BF3471DDF725000DB622C /* ViewController.swift in Sources */,
+				84DDFB411DE497C200085753 /* DataDownloadCoreData+CoreDataProperties.swift in Sources */,
 				842BF3571DDF72F400DB622C /* GoogleSearchPDF.swift in Sources */,
+				84DDFB401DE497C200085753 /* DataDownloadCoreData+CoreDataClass.swift in Sources */,
+				84DDFB351DE48E0B00085753 /* CoreDataManager.swift in Sources */,
+				84DDFB431DE497C200085753 /* SearchHistory+CoreDataProperties.swift in Sources */,
+				84DDFB3B1DE496EE00085753 /* Model.xcdatamodeld in Sources */,
 				84262E501DE4750300B968DE /* TaskWithBlocks.swift in Sources */,
 				842BF3451DDF725000DB622C /* AppDelegate.swift in Sources */,
 				84262E4E1DE46B4C00B968DE /* DownloadManager.swift in Sources */,
+				84DDFB461DE4A69000085753 /* DataDownload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +362,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		84DDFB391DE496EE00085753 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				84DDFB3A1DE496EE00085753 /* Model.xcdatamodel */,
+			);
+			currentVersion = 84DDFB3A1DE496EE00085753 /* Model.xcdatamodel */;
+			name = Model.xcdatamodeld;
+			path = ../Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 842BF3391DDF725000DB622C /* Project object */;
 }

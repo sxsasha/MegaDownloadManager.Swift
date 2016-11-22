@@ -28,6 +28,7 @@ class DownloadManager : NSObject, URLSessionDelegate
         
         self.defaultSession = URLSession(configuration: sessionConfig, delegate: self, delegateQueue: ourQueue)
     }
+    
     func downloadWithURL(url urlString:String, progressBlock:@escaping ProgressBlock, complateBlock : @escaping ComplateBlock, errorBlock: @escaping ErrorBlock) -> URLSessionDownloadTask?
     {
         let url = URL(string: urlString)
@@ -51,28 +52,52 @@ class DownloadManager : NSObject, URLSessionDelegate
         return nil
     }
     
+    // #MARK: - URLSessionTaskDelegate
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?)
     {
+        let downloadTaskBlock : TaskWithBlocks = dictOfDownloadTask.object(forKey: task.taskIdentifier) as! TaskWithBlocks
+        if error != nil
+        {
+            downloadTaskBlock.errorBlock?(error!)
+        }
         
+        dictOfDownloadTask.removeObject(forKey: task.taskIdentifier)
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL)
     {
-        
+        let downloadTaskBlock : TaskWithBlocks = dictOfDownloadTask.object(forKey: downloadTask.taskIdentifier) as! TaskWithBlocks
+        downloadTaskBlock.complateBlock?(downloadTask.taskIdentifier, location)
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64)
     {
         let progress : Double = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-        //let downloaded =
+        let downloaded = getReadableFormat(bytes: totalBytesWritten)
+        let expectedSize = getReadableFormat(bytes: totalBytesExpectedToWrite)
+        let size = String.init(format: "%@/%@", downloaded, expectedSize)
         
-
-//        NSString* downloaded = [self getReadableFormat:totalBytesWritten];
-//        NSString* expectedSize = [self getReadableFormat:totalBytesExpectedToWrite];
-//        NSString* size = [NSString stringWithFormat:@"%@/%@",downloaded,expectedSize];
-//        
-//        TaskWithBlocks* downloadTaskBlock = self.dictOfDownloadTask[@(downloadTask.taskIdentifier)];
-//        downloadTaskBlock.progressBlock(progress,(int)downloadTask.taskIdentifier,size);
+        let downloadTaskBlock : TaskWithBlocks = self.dictOfDownloadTask.object(forKey: downloadTask.taskIdentifier) as! TaskWithBlocks
+        downloadTaskBlock.progressBlock?(progress,downloadTask.taskIdentifier,size)
+    }
+    
+    // #MARK: - Help Methods
+    func getReadableFormat(bytes: Int64) -> String
+    {
+        let array = ["b","kb","mb","gb","gb","tb","pb"]
+        var xBytes = Double(bytes)
+        var i = 0
+        while xBytes > 1024
+        {
+            xBytes = xBytes / 1024.0
+            i = i + 1
+        }
+        
+        if i >= array.count
+        {
+            i = array.count - 1
+        }
+        return String.init(format: "%d%@", Int(xBytes),array[i])
     }
     
 }
