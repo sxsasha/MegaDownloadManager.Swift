@@ -79,30 +79,20 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="TGV-7B-q4m" id="7Tt-JB-uMW"/>
-                            <outlet property="delegate" destination="TGV-7B-q4m" id="rPY-LW-4C0"/>
+                            <outlet property="dataSource" destination="TGV-7B-q4m" id="P05-9g-95s"/>
+                            <outlet property="delegate" destination="TGV-7B-q4m" id="vPS-xD-QRg"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="PDF files" id="uVv-6L-dyp">
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="xXy-su-X6N">
                             <connections>
-                                <action selector="addMorePDFLinks:" destination="TGV-7B-q4m" id="OQJ-8g-Pq7"/>
+                                <action selector="searchAction:" destination="TGV-7B-q4m" id="s6o-OH-BcW"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <connections>
-                        <outlet property="searchDisplayController" destination="aVM-X1-sg8" id="dZG-9s-1FV"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p8g-h3-sfb" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="aVM-X1-sg8">
-                    <connections>
-                        <outlet property="delegate" destination="TGV-7B-q4m" id="rsi-br-Z0e"/>
-                        <outlet property="searchContentsController" destination="TGV-7B-q4m" id="GKM-aM-fpw"/>
-                        <outlet property="searchResultsDataSource" destination="TGV-7B-q4m" id="Z4a-9w-WGy"/>
-                        <outlet property="searchResultsDelegate" destination="TGV-7B-q4m" id="3Fc-Dp-NPE"/>
-                    </connections>
-                </searchDisplayController>
+                <searchDisplayController id="aVM-X1-sg8"/>
             </objects>
             <point key="canvasLocation" x="-226.40000000000001" y="-107.49625187406298"/>
         </scene>

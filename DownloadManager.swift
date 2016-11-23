@@ -13,7 +13,7 @@ class DownloadManager : NSObject, URLSessionDelegate
     var defaultSession : URLSession?
     var dictOfDownloadTask : NSMutableDictionary = NSMutableDictionary()
     
-    static let sharedManager = GoogleSearchPDF()
+    static let sharedManager = DownloadManager()
     
     override init()
     {

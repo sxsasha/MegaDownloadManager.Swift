@@ -10,6 +10,19 @@ import UIKit
 
 let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
 
+func getAllDataDownloadFromaDatabase() -> [DataDownload]
+{
+    let dataDownloadsFromDatabase = CoreDataManager.sharedManager.getAllDataDownloads()
+    
+    var array = [DataDownload]()
+    for obj in dataDownloadsFromDatabase!
+    {
+        let dataDownload = DataDownload(withDownloads: obj)
+        array.append(dataDownload)
+    }
+    return array
+}
+
 class DataDownload
 {
     var name : String?{
@@ -73,7 +86,7 @@ class DataDownload
         get{return self.urlString}
     }
     var localURL : String?
-    var progress : Double?
+    var progress : Float?
     var downloaded : String?
     var isComplate : Bool = false
     var isDownloading : Bool = false
@@ -102,18 +115,7 @@ class DataDownload
     }
     
 // MARK: - Help Methods
-    func getAllDataDownloadFromaDatabase() -> [DataDownload]
-    {
-        let dataDownloadsFromDatabase = self.coreDataManager.getAllDataDownloads()
-        
-        var array = [DataDownload]()
-        for obj in dataDownloadsFromDatabase!
-        {
-            let dataDownload = DataDownload(withDownloads: obj)
-            array.append(dataDownload)
-        }
-        return array
-    }
+ 
     func removeFromDatabase() -> ()
     {
         if localURL != nil
