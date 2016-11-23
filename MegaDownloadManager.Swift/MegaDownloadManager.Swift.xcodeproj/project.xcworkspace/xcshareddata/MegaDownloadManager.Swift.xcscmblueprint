@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "ED099F62D67D4667E0540F588075A9AE4B3445CB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "ED099F62D67D4667E0540F588075A9AE4B3445CB" : 9223372036854775807,
+    "EDC214A2B42F70DA8D791FDF42D3CE50AFB6F5EB" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D4039ED5-F037-4D5E-A60E-F25A21E90943",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "ED099F62D67D4667E0540F588075A9AE4B3445CB" : "MegaDownloadManager.Swift\/",
+    "EDC214A2B42F70DA8D791FDF42D3CE50AFB6F5EB" : "Desktop\/backup\/MegaDownloadmanager\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "MegaDownloadManager.Swift",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "MegaDownloadManager.Swift\/MegaDownloadManager.Swift.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/sxsasha\/MegaDownloadManager.Swift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "ED099F62D67D4667E0540F588075A9AE4B3445CB"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/sxsasha\/MegaDownloadmanager.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EDC214A2B42F70DA8D791FDF42D3CE50AFB6F5EB"
+    }
+  ]
+}

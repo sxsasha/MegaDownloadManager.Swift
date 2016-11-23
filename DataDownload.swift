@@ -12,24 +12,62 @@ let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDom
 
 class DataDownload
 {
-    var name : String?
+    var name : String?{
+        set
+        {
+            dataDownloadCoreData?.name = newValue
+        }get
+        {
+            return self.name
+        }
+    }
+    var localName : String? {
+        set
+        {
+            dataDownloadCoreData?.localName = newValue
+        }get
+        {
+            return self.localName
+        }
+    }
     var identifier : Int16?
     var urlString : String? {
     set
     {
-        if self.name != nil
+        if self.name == nil
+        {
+            let name = newValue?.removingPercentEncoding
+            let url = URL.init(string: name!)
+            self.name = url?.lastPathComponent
+        }
+        if self.localName == nil
         {
             let url = URL.init(string: newValue!)
-            var name = url?.lastPathComponent
-
-            if (name!.hasSuffix(".pdf"))
+            var tempLocalName = url?.lastPathComponent
+            
+            if (tempLocalName?.characters.count)! < 5
             {
-                name = name?.appending(".pdf")
+                tempLocalName = tempLocalName?.appending(".pdf")
+            }
+            else
+            {
+                if (tempLocalName!.hasSuffix(".pdf"))
+                {
+                    tempLocalName = tempLocalName?.appending(".pdf")
+                }
             }
             
-            let isHaveSpace =  name!.components(separatedBy:" ")
+            let characters : NSMutableCharacterSet = NSMutableCharacterSet.alphanumeric()
+            characters.addCharacters(in:".")
+            characters.invert()
+
+            let isHaveSpace =  localName!.components(separatedBy: characters as CharacterSet)
             self.name = isHaveSpace.joined(separator: "_")
         }
+        //create localURL (where save)
+        self.localURL = documentURL?.appendingPathComponent(self.localName!).absoluteString
+        self.dataDownloadCoreData?.urlString = newValue
+        self.coreDataManager.save()
         
     }
         get{return self.urlString}
@@ -60,6 +98,31 @@ class DataDownload
         {
             isComplate = true
             progress = 1.0
+        }
+    }
+    
+// MARK: - Help Methods
+    func getAllDataDownloadFromaDatabase() -> [DataDownload]
+    {
+        let dataDownloadsFromDatabase = self.coreDataManager.getAllDataDownloads()
+        
+        var array = [DataDownload]()
+        for obj in dataDownloadsFromDatabase!
+        {
+            let dataDownload = DataDownload(withDownloads: obj)
+            array.append(dataDownload)
+        }
+        return array
+    }
+    func removeFromDatabase() -> ()
+    {
+        if localURL != nil
+        {
+            coreDataManager.deleteEntity(object: dataDownloadCoreData!)
+            let localURL = URL.init(string: self.localURL!)
+            try? FileManager.default.removeItem(at: localURL!)
+            dataDownloadCoreData = nil
+            coreDataManager.save()
         }
     }
     

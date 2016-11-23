@@ -128,15 +128,14 @@ class CoreDataManager
         managedObjectContext?.delete(object)
     }
     
-    func save () -> (Error?)
+    func save () -> ()
     {
         do
         {
             try managedObjectContext?.save()
         } catch
         {
-            return error
+            // handle error
         }
-        return nil
     }
 }
