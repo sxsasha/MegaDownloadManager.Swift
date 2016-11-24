@@ -43,7 +43,7 @@ class DataDownload
             return self.localName
         }
     }
-    var identifier : Int16?
+    var identifier : Int?
     var urlString : String? {
     set
     {

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDelegate, UITableViewDataSource,UITableViewDelegate, GotPDFLinksDelegate //, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate
+class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDelegate, GotPDFLinksDelegate , DZNEmptyDataSetSource, DZNEmptyDataSetDelegate
 {
     var arrayOfDataDownload = NSMutableArray()
     var downloadManager : DownloadManager = DownloadManager.sharedManager
@@ -18,16 +18,21 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     var searchBar : UISearchBar = UISearchBar()
     var searchField : UITextField?
     
-//    @property (nonatomic,strong) NSMutableArray* arrayOfDataDownload;
-//    @property (nonatomic,strong) Reachability* reach;
+    
+    var reach = Reachability.init(hostName: "https://www.apple.com")
     
     override func viewDidLoad()
     {
+        
         super.viewDidLoad()
         
         self.emptyTableView()
         self.initAll()
         self.setupSearchBar()
+    }
+    override func viewWillAppear(_ animated: Bool)
+    {
+        
     }
 
     override func didReceiveMemoryWarning()
@@ -41,8 +46,8 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     {
         // For EmptyDataSet
         // empty tableView
-        //    self.tableView.emptyDataSetSource = self;
-        //    self.tableView.emptyDataSetDelegate = self;
+        self.tableView.emptyDataSetSource = self
+        self.tableView.emptyDataSetDelegate = self
         
         // A little trick for removing the cell separators
         self.tableView.tableFooterView = UIView()
@@ -53,21 +58,18 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         searchPDFmanager.delegate = self
         let dataDownloadsFromDatabase : [DataDownload] = getAllDataDownloadFromaDatabase()
         self.arrayOfDataDownload.addObjects(from: dataDownloadsFromDatabase)
-        
-        // check if we have internet connections with Reachability
-        //self.reach = [Reachability reachabilityWithHostname:@"https://www.apple.com"];
     }
     func setupSearchBar() -> ()
     {
-        searchBar.placeholder = "Type search request"
-        searchBar.delegate = self
-        navigationItem.titleView = searchBar
-        searchBar.autocapitalizationType = UITextAutocapitalizationType.none
-        searchBar.autocorrectionType = UITextAutocorrectionType.no
-        searchBar.spellCheckingType = UITextSpellCheckingType.no
-        searchBar.keyboardType = UIKeyboardType.webSearch
-        searchBar.enablesReturnKeyAutomatically = false
-        searchBar.returnKeyType = UIReturnKeyType.search
+        self.searchBar.placeholder = "Type search request"
+        self.searchBar.delegate = self
+        self.navigationItem.titleView = searchBar
+        self.searchBar.autocapitalizationType = UITextAutocapitalizationType.none
+        self.searchBar.autocorrectionType = UITextAutocorrectionType.no
+        self.searchBar.spellCheckingType = UITextSpellCheckingType.no
+        self.searchBar.keyboardType = UIKeyboardType.webSearch
+        self.searchBar.enablesReturnKeyAutomatically = false
+        self.searchBar.returnKeyType = UIReturnKeyType.search
         
         let view0 = searchBar.subviews.first
         let numViews = view?.subviews.count
@@ -87,24 +89,30 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     @IBAction func searchAction(_ sender: UIBarButtonItem)
     {
-        
+        addMorePDFLinks()
+        sender.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6)
+        {
+            sender.isEnabled = true
+        }
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar)
     {
-        
+        addMorePDFLinks()
     }
     
 // MARK: - Help Method
     func addMorePDFLinks() -> ()
     {
-        if true
+        if (reach?.isReachable())!
         {
             self.searchPDFmanager.getTenPDFLinksWithSearchString(searchString: self.searchBar.text!)
+            self.searchBar.resignFirstResponder()
         }
         else
         {
-            //[self errorWithSearchString:nil];
+            errorWithSearchString(string: nil)
             let alertController = UIAlertController.init(title: "No Internet Connection", message: "Your device has no internet connection now", preferredStyle: UIAlertControllerStyle.alert)
             let okAction = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.default, handler: nil)
             alertController.addAction(okAction)
@@ -123,8 +131,6 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         cell.sizeProgressLabel.text = cell.dataDownload?.downloaded
         cell.progressView.setProgress(progress!, animated: false)
         cell.pauseImageView.isHidden = !(cell.dataDownload?.isPause)!
-        
-        
     }
     
     func percentFromProgress(progress: Float) -> Float
@@ -140,6 +146,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     }
     
 // MARK: - GotPDFLinksDelegate
+    
     func givePDFLink(link: [String?])
     {
         let array = NSMutableArray()
@@ -175,12 +182,11 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
     }
     
-    func errorWithSearchString(string : String) -> ()
-    {
-        UIView.animate(withDuration: 0.3, animations: { 
+    func errorWithSearchString(string: String?) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.searchField?.backgroundColor = UIColor.red
-            }) { (finished) in
-                self.searchField?.backgroundColor = nil
+        }) { (finished) in
+            self.searchField?.backgroundColor = nil
         }
     }
     
@@ -218,19 +224,144 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        var dataDownload : DataDownload = (self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload)!
+        let dataDownload : DataDownload = (self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload)!
         
         let localURL = URL.init(string: dataDownload.localURL!)
         
         
         if FileManager.default.fileExists(atPath: (localURL?.relativePath)!)
         {
+            self.webView?.loadHTMLString("", baseURL: nil)
+            self.webView = nil
             
+            let viewController = UIViewController()
+            self.webView = UIWebView()
+            viewController.view = self.webView
+            self.webView?.delegate = self
+            self.webView?.scalesPageToFit = true
+            self.webView?.scrollView.minimumZoomScale = 1
+            self.webView?.scrollView.maximumZoomScale = 20
+            let localURLs = URL.init(string: dataDownload.localURL!)
+            let pdfData = try? Data.init(contentsOf: localURLs!)
+            if pdfData != nil
+            {
+                self.webView?.load(pdfData!, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: localURLs!)
+            }
+            
+            self.navigationController?.pushViewController(viewController, animated: true)
+            
+            dataDownload.isComplate = true
+            dataDownload.isDownloading = false
         }
-        
-        
+        else if !dataDownload.isDownloading
+        {
+            let progressBlock : ProgressBlock = {(progress: Double, identifier: Int, totalString: String) -> Void in
+                dataDownload.progress = Float(progress)
+                dataDownload.downloaded = totalString
+            }
+            let complateBlock : ComplateBlock = {(identifier: Int, url: URL) -> Void in
+                dataDownload.progress = 1.0
+                dataDownload.isComplate = true
+                dataDownload.isDownloading = false
+                let localURL = URL.init(string: dataDownload.localURL!)
+                try? FileManager.default.moveItem(at: url, to: localURL!)
+            }
+            let errorBlock : ErrorBlock = {(error: Error) -> Void in
+                dataDownload.downloaded = error.localizedDescription
+            }
+            dataDownload.downloadTask = self.downloadManager.downloadWithURL(url: dataDownload.urlString!, progressBlock: progressBlock, complateBlock: complateBlock, errorBlock: errorBlock)
+            dataDownload.identifier = dataDownload.downloadTask?.taskIdentifier
+        }
+        else if dataDownload.isDownloading
+        {
+            if dataDownload.downloadTask?.state == .running
+            {
+                dataDownload.downloadTask?.suspend()
+                dataDownload.isPause = true
+            }
+            else if dataDownload.downloadTask?.state == .suspended
+            {
+                dataDownload.downloadTask?.resume()
+                dataDownload.isPause = false
+            }
+        }
     }
     
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
+    {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete
+        {
+            var dataDownload = self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload
+            self.arrayOfDataDownload.remove(dataDownload)
+            
+            dataDownload?.removeFromDatabase()
+            dataDownload?.downloadTask?.cancel()
+            
+            self.tableView.beginUpdates()
+            self.tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            self.tableView.endUpdates()
+            
+            dataDownload?.progress = -100.0
+            dataDownload = nil
+        }
+    }
+    
+//MARK: - UIWebViewDelegate
+    
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error)
+    {
+        let html = "<html><body><head><h1>Error with open File</h1></head></body></html>"
+        webView.loadHTMLString(html, baseURL: nil)
+    }
+    
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool
+    {
+        let isExternalResource : Bool = request.url!.scheme!.hasPrefix("http")
+        if  navigationType == .linkClicked && isExternalResource
+        {
+            return false
+        }
+        return true
+    }
+    
+//MARK: - DZNEmptyDataSetSource & DZNEmptyDataSetDelegate
+    
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString?
+    {
+        let str = "Please trying search something"
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString?
+    {
+        let str = "Program trying search this in Google like pdf and u can download it and watch."
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage?
+    {
+        return UIImage(named: "emptyPlaceholder.png")
+    }
+    
+//    func buttonTitle(forEmptyDataSet scrollView: UIScrollView, for state: UIControlState) -> NSAttributedString? {
+//        let str = "Add Grokkleglob"
+//        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.callout)]
+//        return NSAttributedString(string: str, attributes: attrs)
+//    }
+    
+    func emptyDataSet(_ scrollView: UIScrollView, didTap button: UIButton)
+    {
+        self.searchBar.resignFirstResponder()
+//        let ac = UIAlertController(title: "Button tapped!", message: nil, preferredStyle: .alert)
+//        ac.addAction(UIAlertAction(title: "Hurray", style: .default))
+//        present(ac, animated: true)
+    }
 
 }
 

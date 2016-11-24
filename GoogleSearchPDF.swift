@@ -26,7 +26,11 @@ class GoogleSearchPDF
     var dataTask : URLSessionDataTask?
     var arrayOfSearchHistory: NSMutableArray = NSMutableArray()
     let myQueue : DispatchQueue? = DispatchQueue(label: "GoogleSearchPDF")
-    //static let coreDataManager : CoreDataManager.sharedManager
+    
+    init()
+    {
+        self.arrayOfSearchHistory.addObjects(from: CoreDataManager.sharedManager.getAllSearchHistory()!)
+    }
     
     func getTenPDFLinksWithSearchString(searchString: String ) -> ()
     {
@@ -37,26 +41,27 @@ class GoogleSearchPDF
     
     func createRequest(searchString : String) -> ()
     {
-        //    SearchHistory* foundHistory = nil;
-        //    for (SearchHistory* history in self.arrayOfSearchHistory)
-        //    {
-        //    if([history.searchString isEqualToString:searchString])
-        //    {
-        //    history.getCount = history.getCount + 10;
-        //    history.time = [NSDate date];
-        //    foundHistory = history;
-        //    break;
-        //    }
-        //    }
-        //    if (!foundHistory)
-        //    {
-        //    foundHistory = [self.coreDataManager addSearchRequest:searchString count:1 atTime:[NSDate date]];
-        //    [self.arrayOfSearchHistory addObject:foundHistory];
-        //    }
-        //
+        
+        var foundHistory : SearchHistory?
+        for history in self.arrayOfSearchHistory as NSArray as! [SearchHistory]
+        {
+            if history.searchString == searchString
+            {
+                history.getCount = history.getCount + 10
+                history.time = NSDate()
+                foundHistory = history
+                break
+            }
+        }
+        if foundHistory == nil
+        {
+            foundHistory = CoreDataManager.sharedManager.addSearchRequest(string: searchString, count: 1, atTime: NSDate())
+            self.arrayOfSearchHistory .add(foundHistory)
+        }
+        
         let string = searchString.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
         
-        let urlString = String.init(format: "https://www.googleapis.com/customsearch/v1?q=%@&fileType=pdf&filter=1&cx=%@&key=%@&start=%d", string! ,GoogleSearchID,GoogleAPI,1)
+        let urlString = String.init(format: "https://www.googleapis.com/customsearch/v1?q=%@&fileType=pdf&filter=1&cx=%@&key=%@&start=%d", string! ,GoogleSearchID,GoogleAPI,Int((foundHistory?.getCount)!))
         let url = URL(string: urlString)
         
         if let staticURL = url
@@ -88,7 +93,6 @@ class GoogleSearchPDF
             array.append(dictionary["link"])
         }
         delegate?.givePDFLink(link: array)
-        //[self.coreDataManager save:nil];
     }
     
     // #MARK: - Help Methods
