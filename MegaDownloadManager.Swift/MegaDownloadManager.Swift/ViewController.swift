@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDelegate, GotPDFLinksDelegate , DZNEmptyDataSetSource, DZNEmptyDataSetDelegate
 {
-    var arrayOfDataDownload = NSMutableArray()
+    var arrayOfDataDownload = [DataDownload]()
     var downloadManager : DownloadManager = DownloadManager.sharedManager
     var searchPDFmanager : GoogleSearchPDF = GoogleSearchPDF.sharedManager
     
@@ -53,7 +53,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     {
         searchPDFmanager.delegate = self
         let dataDownloadsFromDatabase : [DataDownload] = getAllDataDownloadFromaDatabase()
-        self.arrayOfDataDownload.addObjects(from: dataDownloadsFromDatabase)
+        self.arrayOfDataDownload.append(contentsOf: dataDownloadsFromDatabase)
     }
     func setupSearchBar() -> ()
     {
@@ -118,21 +118,26 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
     }
     
-    func reSetupCell(cell : DownloadCell) -> ()
+    func reSetupCell(cell : DownloadCell, dataDownload: DataDownload) -> ()
     {
-        cell.dataDownload?.progress = cell.dataDownload?.progress
-        let progress = cell.dataDownload?.progress
-        let percent = self.percentFromProgress(progress: progress!)
-        cell.progressLabel.text = String.init(format: "%.2f", percent)
-        cell.nameLabel.text = cell.dataDownload?.name
-        cell.sizeProgressLabel.text = cell.dataDownload?.downloaded
-        cell.progressView.setProgress(progress!, animated: false)
-        cell.pauseImageView.isHidden = !(cell.dataDownload?.isPause)!
+        let progress = dataDownload.progress
+        let percent = self.percentFromProgress(progress: progress)
+        let progressText = String.init(format: "%.2f", percent)
+        
+        cell.progressLabel.text = progressText
+        cell.nameLabel.text = dataDownload.name
+        cell.sizeProgressLabel.text = dataDownload.downloaded
+        cell.progressView.setProgress(progress, animated: false)
+        cell.pauseImageView.isHidden = !dataDownload.isPause
     }
     
-    func percentFromProgress(progress: Float) -> Float
+    func percentFromProgress(progress: Float?) -> Float
     {
-        let percent = (progress*100 < 0) || (progress*100 > 100) ? 0.0 : progress*100
+        if progress == nil
+        {
+            return 0.0
+        }
+        let percent = (progress!*100 < 0) || (progress!*100 > 100) ? 0.0 : progress!*100
         return percent
     }
     
@@ -146,19 +151,20 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     func givePDFLink(link: [String?])
     {
-        let array = NSMutableArray()
+        var array = [DataDownload]()
         for urlString in link
         {
             var isHaveSomeURL = false
             for dataDownload in self.arrayOfDataDownload
             {
-                isHaveSomeURL = isHaveSomeURL || (dataDownload as! DataDownload).urlString == urlString
+                isHaveSomeURL = isHaveSomeURL || dataDownload.urlString == urlString
             }
             if !isHaveSomeURL
             {
                 let download = DataDownload()
+                
                 download.urlString = urlString
-                array.add(download)
+                array.append(download)
             }
         }
         DispatchQueue.main.async {
@@ -171,9 +177,8 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
                 arrayOfIndexs.append(indexPath)
                 i = i + 1
             }
-            let indexSet = IndexSet.init(integersIn: 0...array.count)
             
-            self.arrayOfDataDownload.insert(array as NSArray as! [Any], at: indexSet)
+            self.arrayOfDataDownload.insert(contentsOf: array, at: 0)
             
             self.tableView.insertRows(at: arrayOfIndexs, with: UITableViewRowAnimation.automatic)
             self.tableView.reloadData()
@@ -199,20 +204,12 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        let identifier = "pdf"
+        let dataDownload = self.arrayOfDataDownload[indexPath.row]
+        let cell : DownloadCell = dataDownload.cell
         
-        var cell : DownloadCell? = tableView.dequeueReusableCell(withIdentifier: identifier) as? DownloadCell
+        reSetupCell(cell: cell, dataDownload: dataDownload)
         
-        if cell == nil
-        {
-            cell = DownloadCell(style: UITableViewCellStyle.default, reuseIdentifier: identifier)
-        }
-        
-        cell?.dataDownload = self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload
-        
-        reSetupCell(cell: cell!)
-        
-        return cell!
+        return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -224,8 +221,12 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let dataDownload : DataDownload = (self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload)!
+        let dataDownload : DataDownload = self.arrayOfDataDownload[indexPath.row]
         
+        if dataDownload.localURL == nil
+        {
+            return
+        }
         let localURL = URL.init(string: dataDownload.localURL!)
         
         
@@ -271,9 +272,11 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             }
             dataDownload.downloadTask = self.downloadManager.downloadWithURL(url: dataDownload.urlString!, progressBlock: progressBlock, complateBlock: complateBlock, errorBlock: errorBlock)
             dataDownload.identifier = dataDownload.downloadTask?.taskIdentifier
+            dataDownload.isDownloading = true
         }
         else if dataDownload.isDownloading
         {
+            print("state:\(dataDownload.downloadTask?.state.rawValue)")
             if dataDownload.downloadTask?.state == .running
             {
                 dataDownload.downloadTask?.suspend()
@@ -295,8 +298,8 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete
         {
-            var dataDownload = self.arrayOfDataDownload.object(at: indexPath.row) as? DataDownload
-            self.arrayOfDataDownload.remove(dataDownload)
+            var dataDownload : DataDownload? = self.arrayOfDataDownload[indexPath.row]
+            self.arrayOfDataDownload.remove(at: indexPath.row)
             
             dataDownload?.removeFromDatabase()
             dataDownload?.downloadTask?.cancel()

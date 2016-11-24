@@ -23,7 +23,7 @@ func getAllDataDownloadFromaDatabase() -> [DataDownload]
     return array
 }
 
-class DataDownload
+class DataDownload : NSObject
 {
     var name : String?{
         didSet
@@ -43,9 +43,9 @@ class DataDownload
     {
         if self.name == nil
         {
-            let name = urlString?.removingPercentEncoding
-            let url = URL.init(string: name!)
-            self.name = url?.lastPathComponent
+            let tempName = urlString?.removingPercentEncoding
+            let nameNSString = tempName as NSString?
+            self.name = nameNSString?.lastPathComponent
         }
         if self.localName == nil
         {
@@ -75,36 +75,86 @@ class DataDownload
         self.localURL = documentURL?.appendingPathComponent(self.localName!).absoluteString
         self.dataDownloadCoreData?.urlString = urlString
         self.coreDataManager.save()
-        
     }
     }
     var localURL : String?
-    var progress : Float?
-    var downloaded : String?
-    var isComplate : Bool = false
-    var isDownloading : Bool = false
-    var isPause : Bool = false
+    var progress : Float = 0.0{
+        didSet
+        {
+            let percent = (progress*100 < 0) || (progress*100 > 100) ? 0.0 : progress*100
+            DispatchQueue.main.async {
+                self.cell.progressLabel.text = String.init(format: "%.2f", percent)
+                self.cell.progressView.setProgress(Float(self.progress), animated: false)
+            }
+
+        }
+    }
+    var downloaded : String = "" {
+        didSet
+        {
+            DispatchQueue.main.async {
+                self.cell.sizeProgressLabel.text = self.downloaded
+            }
+        }
+    }
+    var isComplate : Bool = false{
+        didSet
+        {
+            if self.isComplate
+            {
+                DispatchQueue.main.async {
+                    self.cell.progressLabel.text = String.init(format: "%.2f", 100.0)
+                    self.cell.progressView.setProgress(1.0, animated: false)
+                }
+            }
+        }
+    }
+    var isDownloading : Bool = false{
+        didSet
+        {
+            
+        }
+    }
+    var isPause : Bool = false{
+        didSet
+        {
+            DispatchQueue.main.async {
+                    self.cell.pauseImageView.isHidden =  !self.isPause
+            }
+        }
+    }
+    
+    var cell = DownloadCell(style: UITableViewCellStyle.default, reuseIdentifier: "pdf")
     
     var dataDownloadCoreData : DataDownloadCoreData?
     var coreDataManager : CoreDataManager = CoreDataManager.sharedManager
     var downloadTask : URLSessionDownloadTask?
     
-    init()
+    override init()
     {
+        super.init()
         dataDownloadCoreData = coreDataManager.addDataDownload()
     }
     
-    init(withDownloads dataDownload: DataDownloadCoreData)
+    init(withDownloads coreDataDownload: DataDownloadCoreData)
     {
-        dataDownloadCoreData = dataDownload
-        name = dataDownload.name
-        urlString = dataDownload.urlString
+        super.init()
+        self.initWith(coreDataDownload: coreDataDownload)
+    }
+    
+    func initWith(coreDataDownload: DataDownloadCoreData) -> ()
+    {
+        self.dataDownloadCoreData = coreDataDownload
+        self.name = coreDataDownload.name
+        self.localName = coreDataDownload.localName
+        self.urlString = coreDataDownload.urlString
         
-        if checkIfWeHaveSomeFile(name: name!)
+        if checkIfWeHaveSomeFile(urlString: self.localURL!)
         {
             isComplate = true
             progress = 1.0
         }
+
     }
     
 // MARK: - Help Methods
@@ -121,11 +171,11 @@ class DataDownload
         }
     }
     
-    func checkIfWeHaveSomeFile(name: String) -> Bool
+    func checkIfWeHaveSomeFile(urlString: String) -> Bool
     {
-        let localURL = documentURL?.appendingPathComponent(name).relativeString ///???
-
-        if (FileManager.default.fileExists(atPath: localURL!))
+        let url = URL.init(string: urlString)
+        
+        if FileManager.default.fileExists(atPath: (url?.relativePath)!)
         {
             return true
         }

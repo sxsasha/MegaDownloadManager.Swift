@@ -8,10 +8,10 @@
 
 import UIKit
 
-class DownloadManager : NSObject, URLSessionDelegate
+class DownloadManager : NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate
 {
     var defaultSession : URLSession?
-    var dictOfDownloadTask : NSMutableDictionary = NSMutableDictionary()
+    var dictOfDownloadTask = [Int:TaskWithBlocks]()
     
     static let sharedManager = DownloadManager()
     
@@ -44,30 +44,33 @@ class DownloadManager : NSObject, URLSessionDelegate
             downloadTaskBlock.errorBlock = errorBlock
             downloadTaskBlock.downloadTask = sessionTask
             
-            self.dictOfDownloadTask.setObject(downloadTaskBlock, forKey: (sessionTask?.taskIdentifier)! as NSCopying)
+            self.dictOfDownloadTask[(sessionTask?.taskIdentifier)!] = downloadTaskBlock
             sessionTask?.taskDescription = urlString
             sessionTask?.resume()
             return sessionTask
         }
-        return nil
+        else
+        {
+            return nil
+        }
     }
     
     // #MARK: - URLSessionTaskDelegate
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?)
     {
-        let downloadTaskBlock : TaskWithBlocks = dictOfDownloadTask.object(forKey: task.taskIdentifier) as! TaskWithBlocks
+        let downloadTaskBlock : TaskWithBlocks? = self.dictOfDownloadTask[task.taskIdentifier]
         if error != nil
         {
-            downloadTaskBlock.errorBlock?(error!)
+            downloadTaskBlock?.errorBlock?(error!)
         }
         
-        dictOfDownloadTask.removeObject(forKey: task.taskIdentifier)
+        dictOfDownloadTask.removeValue(forKey: task.taskIdentifier)
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL)
     {
-        let downloadTaskBlock : TaskWithBlocks = dictOfDownloadTask.object(forKey: downloadTask.taskIdentifier) as! TaskWithBlocks
-        downloadTaskBlock.complateBlock?(downloadTask.taskIdentifier, location)
+        let downloadTaskBlock : TaskWithBlocks? = self.dictOfDownloadTask[downloadTask.taskIdentifier]
+        downloadTaskBlock?.complateBlock?(downloadTask.taskIdentifier, location)
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64)
@@ -77,8 +80,9 @@ class DownloadManager : NSObject, URLSessionDelegate
         let expectedSize = getReadableFormat(bytes: totalBytesExpectedToWrite)
         let size = String.init(format: "%@/%@", downloaded, expectedSize)
         
-        let downloadTaskBlock : TaskWithBlocks = self.dictOfDownloadTask.object(forKey: downloadTask.taskIdentifier) as! TaskWithBlocks
-        downloadTaskBlock.progressBlock?(progress,downloadTask.taskIdentifier,size)
+        let downloadTaskBlock : TaskWithBlocks? = self.dictOfDownloadTask[downloadTask.taskIdentifier]
+        
+        downloadTaskBlock?.progressBlock?(progress,downloadTask.taskIdentifier,size)
     }
     
     // #MARK: - Help Methods

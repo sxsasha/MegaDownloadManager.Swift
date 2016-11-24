@@ -20,7 +20,7 @@
                         <color key="separatorColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                         <color key="sectionIndexBackgroundColor" red="0.94874493955090522" green="1" blue="0.57125960198602943" alpha="0.0" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" alpha="0.94999999999999996" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="pdf" rowHeight="50" id="dB7-ce-1J3" customClass="DownloadCell">
+                            <tableViewCell clipsSubviews="YES" alpha="0.94999999999999996" contentMode="scaleToFill" restorationIdentifier="pdf" selectionStyle="default" indentationWidth="10" reuseIdentifier="pdf" rowHeight="50" id="dB7-ce-1J3" customClass="DownloadCell" customModule="MegaDownloadManager_Swift">
                                 <rect key="frame" x="0.0" y="92" width="375" height="50"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dB7-ce-1J3" id="c67-ii-rIe">

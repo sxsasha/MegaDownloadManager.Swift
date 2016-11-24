@@ -24,12 +24,16 @@ class GoogleSearchPDF
     
     var delegate : GotPDFLinksDelegate?
     var dataTask : URLSessionDataTask?
-    var arrayOfSearchHistory: NSMutableArray = NSMutableArray()
+    var arrayOfSearchHistory = [SearchHistory]()
     let myQueue : DispatchQueue? = DispatchQueue(label: "GoogleSearchPDF")
     
     init()
     {
-        self.arrayOfSearchHistory.addObjects(from: CoreDataManager.sharedManager.getAllSearchHistory()!)
+        let allSearchHistory : [SearchHistory]? = CoreDataManager.sharedManager.getAllSearchHistory()
+        if allSearchHistory != nil
+        {
+            self.arrayOfSearchHistory.append(contentsOf: allSearchHistory!)
+        }
     }
     
     func getTenPDFLinksWithSearchString(searchString: String ) -> ()
@@ -63,7 +67,7 @@ class GoogleSearchPDF
         if foundHistory == nil
         {
             foundHistory = CoreDataManager.sharedManager.addSearchRequest(string: searchString, count: 1, atTime: NSDate())
-            self.arrayOfSearchHistory.add(foundHistory)
+            self.arrayOfSearchHistory.append(foundHistory!)
         }
         
         let string = searchString.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
@@ -78,9 +82,7 @@ class GoogleSearchPDF
                 if data != nil
                 {
                     let dictionary = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments)
-                    
-                    print(dictionary)
-                    
+
                     if dictionary != nil
                     {
                         self.parseDict(dict: dictionary)//Dictionary<String, Array<Dictionary<String, String>>>) [String: [[String:String]]]

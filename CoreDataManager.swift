@@ -48,9 +48,9 @@ class CoreDataManager
         managedObjectContext?.persistentStoreCoordinator = persistentStoreCoordinator
     }
     
-    // MARK: - Work with Core Data Entity
-    // MARK: - 
-    // MARK: - Work with Data Download
+// MARK: - Work with Core Data Entity
+// MARK: -
+// MARK: - Work with Data Download
     func addDataDownload() -> (DataDownloadCoreData)
     {
         let newDownload = NSEntityDescription.insertNewObject(forEntityName: "DataDownload", into: managedObjectContext!) as! DataDownloadCoreData
@@ -83,7 +83,7 @@ class CoreDataManager
         return allDataDownloads
     }
     
-    // MARK: - Work with Search History
+// MARK: - Work with Search History
     
     func addSearchRequest(string: String, count: Int16, atTime: NSDate) -> SearchHistory
     {
