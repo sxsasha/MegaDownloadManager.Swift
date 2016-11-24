@@ -30,10 +30,6 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         self.initAll()
         self.setupSearchBar()
     }
-    override func viewWillAppear(_ animated: Bool)
-    {
-        
-    }
 
     override func didReceiveMemoryWarning()
     {
@@ -71,8 +67,9 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         self.searchBar.enablesReturnKeyAutomatically = false
         self.searchBar.returnKeyType = UIReturnKeyType.search
         
+        //search UITExtField in SearchBar
         let view0 = searchBar.subviews.first
-        let numViews = view?.subviews.count
+        let numViews = view0?.subviews.count
         var i : Int = 0
         
         while i < numViews!
@@ -89,7 +86,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     @IBAction func searchAction(_ sender: UIBarButtonItem)
     {
-        addMorePDFLinks()
+        self.addMorePDFLinks()
         sender.isEnabled = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6)
         {
@@ -99,7 +96,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar)
     {
-        addMorePDFLinks()
+        self.addMorePDFLinks()
     }
     
 // MARK: - Help Method
@@ -175,14 +172,17 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
                 i = i + 1
             }
             let indexSet = IndexSet.init(integersIn: 0...array.count)
+            
             self.arrayOfDataDownload.insert(array as NSArray as! [Any], at: indexSet)
+            
             self.tableView.insertRows(at: arrayOfIndexs, with: UITableViewRowAnimation.automatic)
             self.tableView.reloadData()
             CoreDataManager.sharedManager.save()
         }
     }
     
-    func errorWithSearchString(string: String?) {
+    func errorWithSearchString(string: String?)
+    {
         UIView.animate(withDuration: 0.3, animations: {
             self.searchField?.backgroundColor = UIColor.red
         }) { (finished) in

@@ -34,8 +34,15 @@ class GoogleSearchPDF
     
     func getTenPDFLinksWithSearchString(searchString: String ) -> ()
     {
-        self.myQueue?.async{
-            self.createRequest(searchString: searchString)
+        if self.checkSearchRequest(string: searchString)
+        {
+            self.myQueue?.async{
+                self.createRequest(searchString: searchString)
+            }
+        }
+        else
+        {
+            self.delegate?.errorWithSearchString(string: searchString)
         }
     }
     
@@ -56,7 +63,7 @@ class GoogleSearchPDF
         if foundHistory == nil
         {
             foundHistory = CoreDataManager.sharedManager.addSearchRequest(string: searchString, count: 1, atTime: NSDate())
-            self.arrayOfSearchHistory .add(foundHistory)
+            self.arrayOfSearchHistory.add(foundHistory)
         }
         
         let string = searchString.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
@@ -71,12 +78,15 @@ class GoogleSearchPDF
                 if data != nil
                 {
                     let dictionary = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments)
+                    
+                    print(dictionary)
+                    
                     if dictionary != nil
                     {
-                        self.parseDict(dict: dictionary as! Dictionary<String, Array<Dictionary<String, String>>>)
+                        self.parseDict(dict: dictionary)//Dictionary<String, Array<Dictionary<String, String>>>) [String: [[String:String]]]
                     }
                 }
-            })
+            }).resume()
         }
         else
         {
@@ -84,13 +94,14 @@ class GoogleSearchPDF
         }
        
     }
-    func parseDict(dict: Dictionary <String,Array<Dictionary<String,String>>>) -> ()
+    func parseDict(dict: Any) -> ()
     {
-        let arrayOfSearchResult = dict["items"]
-        var array = Array<String?>()
-        for dictionary in arrayOfSearchResult!
+        let parseDict :NSDictionary? = dict as? NSDictionary
+        let arrayOfSearchResult: [NSDictionary] = (parseDict?["items"] as! NSArray) as! [NSDictionary]
+        var array = [String?]()
+        for obj in arrayOfSearchResult
         {
-            array.append(dictionary["link"])
+            array.append(obj.object(forKey: "link") as! String?)
         }
         delegate?.givePDFLink(link: array)
     }
@@ -101,7 +112,10 @@ class GoogleSearchPDF
     {
         let nonForbiddenSet : NSMutableCharacterSet = NSMutableCharacterSet.alphanumeric()
         nonForbiddenSet.addCharacters(in:" ")
-        let isForbidden : Bool = string.rangeOfCharacter(from: nonForbiddenSet as CharacterSet) != nil || string == ""
+        let forbiddenSet = nonForbiddenSet.inverted
+        
+        let range : Range? = string.rangeOfCharacter(from: forbiddenSet as CharacterSet) as Range?
+        let isForbidden : Bool = range != nil || string == ""
         
         if isForbidden
         {

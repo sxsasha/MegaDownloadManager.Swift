@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--PDF files-->
+        <!--Empty Data Set Delegate-->
         <scene sceneID="IJb-VS-mfx">
             <objects>
-                <tableViewController id="TGV-7B-q4m" customClass="ViewController" sceneMemberID="viewController">
+                <tableViewController id="TGV-7B-q4m" customClass="ViewController" customModule="MegaDownloadManager_Swift" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Itq-Ul-qPY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -79,8 +79,10 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="TGV-7B-q4m" id="P05-9g-95s"/>
-                            <outlet property="delegate" destination="TGV-7B-q4m" id="vPS-xD-QRg"/>
+                            <outlet property="dataSource" destination="TGV-7B-q4m" id="WQ1-Xq-Tui"/>
+                            <outlet property="delegate" destination="TGV-7B-q4m" id="1ql-fN-fvi"/>
+                            <outlet property="emptyDataSetDelegate" destination="TGV-7B-q4m" id="A5B-nc-seV"/>
+                            <outlet property="emptyDataSetSource" destination="TGV-7B-q4m" id="Pcc-it-V2O"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="PDF files" id="uVv-6L-dyp">

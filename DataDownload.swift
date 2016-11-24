@@ -26,36 +26,30 @@ func getAllDataDownloadFromaDatabase() -> [DataDownload]
 class DataDownload
 {
     var name : String?{
-        set
+        didSet
         {
-            dataDownloadCoreData?.name = newValue
-        }get
-        {
-            return self.name
+            dataDownloadCoreData?.name = name
         }
     }
     var localName : String? {
-        set
+        didSet
         {
-            dataDownloadCoreData?.localName = newValue
-        }get
-        {
-            return self.localName
+            dataDownloadCoreData?.localName = localName
         }
     }
     var identifier : Int?
     var urlString : String? {
-    set
+    didSet
     {
         if self.name == nil
         {
-            let name = newValue?.removingPercentEncoding
+            let name = urlString?.removingPercentEncoding
             let url = URL.init(string: name!)
             self.name = url?.lastPathComponent
         }
         if self.localName == nil
         {
-            let url = URL.init(string: newValue!)
+            let url = URL.init(string: urlString!)
             var tempLocalName = url?.lastPathComponent
             
             if (tempLocalName?.characters.count)! < 5
@@ -74,16 +68,15 @@ class DataDownload
             characters.addCharacters(in:".")
             characters.invert()
 
-            let isHaveSpace =  localName!.components(separatedBy: characters as CharacterSet)
-            self.name = isHaveSpace.joined(separator: "_")
+            let isHaveSpace =  tempLocalName!.components(separatedBy: characters as CharacterSet)
+            self.localName = isHaveSpace.joined(separator: "_")
         }
         //create localURL (where save)
         self.localURL = documentURL?.appendingPathComponent(self.localName!).absoluteString
-        self.dataDownloadCoreData?.urlString = newValue
+        self.dataDownloadCoreData?.urlString = urlString
         self.coreDataManager.save()
         
     }
-        get{return self.urlString}
     }
     var localURL : String?
     var progress : Float?
