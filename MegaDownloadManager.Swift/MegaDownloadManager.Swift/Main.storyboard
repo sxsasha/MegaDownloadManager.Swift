@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="92" width="375" height="50"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dB7-ce-1J3" id="c67-ii-rIe">
-                                    <frame key="frameInset" width="375" height="49"/>
+                                    <frame key="frameInset" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sL9-2b-k4Z">
@@ -86,12 +86,20 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="PDF files" id="uVv-6L-dyp">
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="Kai-tg-5aL">
+                            <connections>
+                                <action selector="editButtonTap:" destination="TGV-7B-q4m" id="16E-lo-i1z"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="xXy-su-X6N">
                             <connections>
                                 <action selector="searchAction:" destination="TGV-7B-q4m" id="s6o-OH-BcW"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="editBarButton" destination="Kai-tg-5aL" id="d3b-4R-gkl"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p8g-h3-sfb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="aVM-X1-sg8"/>

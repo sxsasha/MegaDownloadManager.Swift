@@ -144,6 +144,8 @@ class DataDownload : NSObject
         }
     }
     
+    var cellAccessoryType : UITableViewCellAccessoryType = .none
+
     var cell : DownloadCell? = nil
     
     var dataDownloadCoreData : DataDownloadCoreData?

@@ -18,6 +18,10 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     var searchBar : UISearchBar = UISearchBar()
     var searchField : UITextField?
     
+    var selectedItemsArray = [DataDownload]()
+    var isMultipleEditing : Bool = false
+    
+    @IBOutlet weak var editBarButton: UIBarButtonItem!
     
     var reach = Reachability.init(hostName: "https://www.apple.com")
     
@@ -82,6 +86,11 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
 
     }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        self.tableView.allowsSelectionDuringEditing = true
+    }
 // MARK: - Actions
     
     @IBAction func searchAction(_ sender: UIBarButtonItem)
@@ -99,6 +108,30 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         self.addMorePDFLinks()
     }
     
+    @IBAction func editButtonTap(_ sender: UIBarButtonItem)
+    {
+        self.isMultipleEditing = !self.isMultipleEditing
+        if self.isMultipleEditing
+        {
+            let editButton = UIBarButtonItem.init(title: "Delete All", style: .plain, target: self, action: #selector(self.editButtonTap(_:)))
+            self.navigationController?.navigationBar.topItem?.leftBarButtonItem=editButton
+        }
+        else
+        {
+            let editButton = UIBarButtonItem.init(title: "Edit", style: .plain, target: self, action: #selector(self.editButtonTap(_:)))
+            self.navigationController?.navigationBar.topItem?.leftBarButtonItem=editButton
+            
+            for cell in self.tableView.visibleCells
+            {
+                cell.accessoryType = .none
+            }
+            for dataDownloads in self.arrayOfDataDownload
+            {
+                dataDownloads.cellAccessoryType = .none
+            }
+            self.removeDataDownload(dataDownloadArray: self.selectedItemsArray)
+        }
+    }
 // MARK: - Help Method
     func addMorePDFLinks() -> ()
     {
@@ -121,6 +154,8 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     func reSetupCell(cell : DownloadCell) -> ()
     {
         let dataDownload : DataDownload = cell.dataDownload!
+        
+        cell.accessoryType = (cell.dataDownload?.cellAccessoryType)!
         
         let progress = dataDownload.progress
         let percent = self.percentFromProgress(progress: progress)
@@ -237,6 +272,25 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     {
         tableView.deselectRow(at: indexPath, animated: true)
         
+        if self.isMultipleEditing
+        {
+            let cell : DownloadCell = tableView.cellForRow(at: indexPath) as! DownloadCell
+            
+            if(cell.accessoryType == .none)
+            {
+                cell.accessoryType = .checkmark;
+                cell.dataDownload?.cellAccessoryType = cell.accessoryType
+                self.selectedItemsArray.append(cell.dataDownload!)
+            }
+            else
+            {
+                cell.accessoryType = .none;
+                cell.dataDownload?.cellAccessoryType = cell.accessoryType
+                self.selectedItemsArray = self.selectedItemsArray.filter() { $0 !== cell.dataDownload }
+            }
+            return
+        }
+        
         let dataDownload : DataDownload = self.arrayOfDataDownload[indexPath.row]
         
         if dataDownload.localURL == nil
@@ -260,9 +314,24 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             self.webView?.scrollView.maximumZoomScale = 20
             let localURLs = URL.init(string: dataDownload.localURL!)
             let pdfData = try? Data.init(contentsOf: localURLs!)
+            
+            
+            
             if pdfData != nil
             {
-                self.webView?.load(pdfData!, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: localURLs!)
+                let cfData : CFData = pdfData as! CFData
+                let pdfProvider = CGDataProvider.init(data: cfData)
+                let document = CGPDFDocument.init(pdfProvider!)
+                
+                if document == nil
+                {
+                    let html = "<html><body><head><h1>Error with file</h1></head></body></html>"
+                    self.webView?.loadHTMLString(html, baseURL: nil)
+                }
+                else
+                {
+                    self.webView?.load(pdfData!, mimeType: "application/pdf", textEncodingName: "UTF-8", baseURL: localURLs!)
+                }
             }
             
             self.navigationController?.pushViewController(viewController, animated: true)
@@ -285,6 +354,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             }
             let errorBlock : ErrorBlock = {(error: Error) -> Void in
                 dataDownload.downloaded = error.localizedDescription
+                dataDownload.isDownloading = false
             }
             dataDownload.downloadTask = self.downloadManager.downloadWithURL(url: dataDownload.urlString!, progressBlock: progressBlock, complateBlock: complateBlock, errorBlock: errorBlock)
             dataDownload.identifier = dataDownload.downloadTask?.taskIdentifier
@@ -311,11 +381,13 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         return true
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    {
         if editingStyle == .delete
         {
             var dataDownload : DataDownload? = self.arrayOfDataDownload[indexPath.row]
             self.arrayOfDataDownload.remove(at: indexPath.row)
+            self.selectedItemsArray = self.selectedItemsArray.filter() { $0 !== dataDownload }
             
             dataDownload?.removeFromDatabase()
             dataDownload?.downloadTask?.cancel()
@@ -329,6 +401,26 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             
             dataDownload = nil
         }
+    }
+    
+    func removeDataDownload(dataDownloadArray: [DataDownload]) -> ()
+    {
+        for dataDownload in dataDownloadArray
+        {
+            if let ix = self.arrayOfDataDownload.index(of: dataDownload)
+            {
+                self.arrayOfDataDownload.remove(at: ix)
+                
+                dataDownload.removeFromDatabase()
+                dataDownload.downloadTask?.cancel()
+                
+                dataDownload.cell?.dataDownload = nil
+                dataDownload.cell = nil
+            }
+            
+        }
+        self.selectedItemsArray = [DataDownload]()
+        self.tableView.reloadData()
     }
     
 //MARK: - UIWebViewDelegate
