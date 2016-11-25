@@ -178,6 +178,26 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         return percent
     }
     
+    func removeDataDownload(dataDownloadArray: [DataDownload]) -> ()
+    {
+        for dataDownload in dataDownloadArray
+        {
+            if let ix = self.arrayOfDataDownload.index(of: dataDownload)
+            {
+                self.arrayOfDataDownload.remove(at: ix)
+                
+                dataDownload.removeFromDatabase()
+                dataDownload.downloadTask?.cancel()
+                
+                dataDownload.cell?.dataDownload = nil
+                dataDownload.cell = nil
+            }
+            
+        }
+        self.selectedItemsArray = [DataDownload]()
+        self.tableView.reloadData()
+    }
+    
 // MARK: - UIScrollViewDelegate
     override func scrollViewDidScroll(_ scrollView: UIScrollView)
     {
@@ -314,9 +334,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             self.webView?.scrollView.maximumZoomScale = 20
             let localURLs = URL.init(string: dataDownload.localURL!)
             let pdfData = try? Data.init(contentsOf: localURLs!)
-            
-            
-            
+
             if pdfData != nil
             {
                 let cfData : CFData = pdfData as! CFData
@@ -362,7 +380,6 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
         else if dataDownload.isDownloading
         {
-            print("state:\(dataDownload.downloadTask?.state.rawValue)")
             if dataDownload.downloadTask?.state == .running
             {
                 dataDownload.downloadTask?.suspend()
@@ -403,25 +420,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
     }
     
-    func removeDataDownload(dataDownloadArray: [DataDownload]) -> ()
-    {
-        for dataDownload in dataDownloadArray
-        {
-            if let ix = self.arrayOfDataDownload.index(of: dataDownload)
-            {
-                self.arrayOfDataDownload.remove(at: ix)
-                
-                dataDownload.removeFromDatabase()
-                dataDownload.downloadTask?.cancel()
-                
-                dataDownload.cell?.dataDownload = nil
-                dataDownload.cell = nil
-            }
-            
-        }
-        self.selectedItemsArray = [DataDownload]()
-        self.tableView.reloadData()
-    }
+   
     
 //MARK: - UIWebViewDelegate
     

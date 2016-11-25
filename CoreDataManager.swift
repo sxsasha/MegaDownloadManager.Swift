@@ -133,6 +133,16 @@ class CoreDataManager
     
     func save () -> ()
     {
+        let ourRootController : UINavigationController = UIApplication.shared.windows.first?.rootViewController as!UINavigationController
+        let ourViewController : ViewController =  ourRootController.viewControllers.first as! ViewController
+        
+        var i : Int = 0
+        for dataDownload in ourViewController.arrayOfDataDownload
+        {
+            dataDownload.dataDownloadCoreData?.number = Int16(i)
+            i += 1
+        }
+        
         do
         {
             try managedObjectContext?.save()
