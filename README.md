@@ -1,2 +1,2 @@
-# MegaDownloadmanager
-download and watch pdf files from google search "ios" filetype:pdf
+# MegaDownloadManager.Swift
+search, download and watch pdf files
