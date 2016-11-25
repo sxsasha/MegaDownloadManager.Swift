@@ -370,18 +370,9 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         return UIImage(named: "emptyPlaceholder.png")
     }
     
-//    func buttonTitle(forEmptyDataSet scrollView: UIScrollView, for state: UIControlState) -> NSAttributedString? {
-//        let str = "Add Grokkleglob"
-//        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.callout)]
-//        return NSAttributedString(string: str, attributes: attrs)
-//    }
-    
-    func emptyDataSet(_ scrollView: UIScrollView, didTap button: UIButton)
+    func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView)
     {
         self.searchBar.resignFirstResponder()
-//        let ac = UIAlertController(title: "Button tapped!", message: nil, preferredStyle: .alert)
-//        ac.addAction(UIAlertAction(title: "Hurray", style: .default))
-//        present(ac, animated: true)
     }
 
 }
