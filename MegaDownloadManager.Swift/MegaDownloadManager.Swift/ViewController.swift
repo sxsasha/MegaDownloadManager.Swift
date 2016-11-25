@@ -118,8 +118,10 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
         }
     }
     
-    func reSetupCell(cell : DownloadCell, dataDownload: DataDownload) -> ()
+    func reSetupCell(cell : DownloadCell) -> ()
     {
+        let dataDownload : DataDownload = cell.dataDownload!
+        
         let progress = dataDownload.progress
         let percent = self.percentFromProgress(progress: progress)
         let progressText = String.init(format: "%.2f", percent)
@@ -205,11 +207,25 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         let dataDownload = self.arrayOfDataDownload[indexPath.row]
-        let cell : DownloadCell = dataDownload.cell
+
+        let identifier = "pdf"
+        var cell : DownloadCell? = tableView.dequeueReusableCell(withIdentifier: identifier) as? DownloadCell
         
-        reSetupCell(cell: cell, dataDownload: dataDownload)
+        if cell == nil
+        {
+            cell = DownloadCell.init(style: UITableViewCellStyle.default, reuseIdentifier: identifier)
+        }
         
-        return cell
+        cell?.dataDownload?.cell = nil
+        cell?.dataDownload = nil
+        dataDownload.cell = nil
+        
+        cell?.dataDownload = dataDownload
+        dataDownload.cell = cell
+        
+        reSetupCell(cell: cell!)
+        
+        return cell!
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -304,11 +320,13 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
             dataDownload?.removeFromDatabase()
             dataDownload?.downloadTask?.cancel()
             
+            dataDownload?.cell?.dataDownload = nil
+            dataDownload?.cell = nil
+            
             self.tableView.beginUpdates()
             self.tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
             self.tableView.endUpdates()
             
-            dataDownload?.progress = -100.0
             dataDownload = nil
         }
     }
@@ -317,7 +335,7 @@ class ViewController: UITableViewController, UIWebViewDelegate, UISearchBarDeleg
     
     func webView(_ webView: UIWebView, didFailLoadWithError error: Error)
     {
-        let html = "<html><body><head><h1>Error with open File</h1></head></body></html>"
+        let html = "<html><body><head><h1>Error with open</h1></head></body></html>"
         webView.loadHTMLString(html, baseURL: nil)
     }
     

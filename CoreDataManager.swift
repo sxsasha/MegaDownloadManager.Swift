@@ -78,6 +78,9 @@ class CoreDataManager
         fetchRequest.includesPropertyValues = true
         fetchRequest.returnsObjectsAsFaults = true
         
+        let sortDescriptor = NSSortDescriptor.init(key: "number", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
         let allDataDownloads : [DataDownloadCoreData]? = try? managedObjectContext?.fetch(fetchRequest) as! [DataDownloadCoreData]
         
         return allDataDownloads

@@ -3,6 +3,7 @@
     <entity name="DataDownload" representedClassName=".DataDownloadCoreData" syncable="YES">
         <attribute name="localName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="number" optional="YES" attributeType="Integer 16" minValueString="0" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="urlString" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="SearchHistory" representedClassName=".SearchHistory" syncable="YES">
@@ -11,7 +12,7 @@
         <attribute name="time" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
     </entity>
     <elements>
-        <element name="DataDownload" positionX="-272" positionY="-9" width="128" height="90"/>
+        <element name="DataDownload" positionX="-272" positionY="-9" width="128" height="105"/>
         <element name="SearchHistory" positionX="-54" positionY="-9" width="128" height="88"/>
     </elements>
 </model>

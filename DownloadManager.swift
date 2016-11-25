@@ -55,7 +55,7 @@ class DownloadManager : NSObject, URLSessionDelegate, URLSessionTaskDelegate, UR
         }
     }
     
-    // #MARK: - URLSessionTaskDelegate
+// #MARK: - URLSessionTaskDelegate
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?)
     {
         let downloadTaskBlock : TaskWithBlocks? = self.dictOfDownloadTask[task.taskIdentifier]
@@ -85,7 +85,7 @@ class DownloadManager : NSObject, URLSessionDelegate, URLSessionTaskDelegate, UR
         downloadTaskBlock?.progressBlock?(progress,downloadTask.taskIdentifier,size)
     }
     
-    // #MARK: - Help Methods
+// #MARK: - Help Methods
     func getReadableFormat(bytes: Int64) -> String
     {
         let array = ["b","kb","mb","gb","gb","tb","pb"]

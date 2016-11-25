@@ -83,8 +83,8 @@ class DataDownload : NSObject
         {
             let percent = (progress*100 < 0) || (progress*100 > 100) ? 0.0 : progress*100
             DispatchQueue.main.async {
-                self.cell.progressLabel.text = String.init(format: "%.2f", percent)
-                self.cell.progressView.setProgress(Float(self.progress), animated: false)
+                self.cell?.progressLabel.text = String.init(format: "%.2f", percent)
+                self.cell?.progressView.setProgress(Float(self.progress), animated: false)
             }
 
         }
@@ -93,7 +93,7 @@ class DataDownload : NSObject
         didSet
         {
             DispatchQueue.main.async {
-                self.cell.sizeProgressLabel.text = self.downloaded
+                self.cell?.sizeProgressLabel.text = self.downloaded
             }
         }
     }
@@ -103,8 +103,9 @@ class DataDownload : NSObject
             if self.isComplate
             {
                 DispatchQueue.main.async {
-                    self.cell.progressLabel.text = String.init(format: "%.2f", 100.0)
-                    self.cell.progressView.setProgress(1.0, animated: false)
+                    self.cell?.progressLabel.text = String.init(format: "%.2f", 100.0)
+                    self.cell?.progressView.setProgress(1.0, animated: false)
+                    self.cell?.pauseImageView.isHidden = true
                 }
             }
         }
@@ -112,19 +113,38 @@ class DataDownload : NSObject
     var isDownloading : Bool = false{
         didSet
         {
-            
+            DispatchQueue.main.async {
+                if self.isDownloading
+                {
+                    self.cell?.pauseImageView.image = UIImage(named: "download.png")
+                    self.cell?.pauseImageView.isHidden = false
+                }
+            }
         }
     }
     var isPause : Bool = false{
         didSet
         {
             DispatchQueue.main.async {
-                    self.cell.pauseImageView.isHidden =  !self.isPause
+                if self.isPause
+                {
+                    self.cell?.pauseImageView.image = UIImage(named: "pause.png")
+                    self.cell?.pauseImageView.isHidden = false
+                }
+                else if self.isDownloading
+                {
+                    self.cell?.pauseImageView.image = UIImage(named: "download.png")
+                    self.cell?.pauseImageView.isHidden = false
+                }
+                else
+                {
+                    self.cell?.pauseImageView.isHidden = true
+                }
             }
         }
     }
     
-    var cell = DownloadCell(style: UITableViewCellStyle.default, reuseIdentifier: "pdf")
+    var cell : DownloadCell? = nil
     
     var dataDownloadCoreData : DataDownloadCoreData?
     var coreDataManager : CoreDataManager = CoreDataManager.sharedManager
@@ -154,7 +174,6 @@ class DataDownload : NSObject
             isComplate = true
             progress = 1.0
         }
-
     }
     
 // MARK: - Help Methods
@@ -175,16 +194,6 @@ class DataDownload : NSObject
     {
         let url = URL.init(string: urlString)
         
-        if FileManager.default.fileExists(atPath: (url?.relativePath)!)
-        {
-            return true
-        }
-        else
-        {
-            return false
-        }
+        return FileManager.default.fileExists(atPath: (url?.relativePath)!)
     }
-    
-    
-    
 }

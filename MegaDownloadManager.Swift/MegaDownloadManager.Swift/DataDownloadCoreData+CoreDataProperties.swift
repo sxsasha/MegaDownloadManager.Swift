@@ -19,5 +19,6 @@ extension DataDownloadCoreData {
     @NSManaged public var name: String?
     @NSManaged public var urlString: String?
     @NSManaged public var localName: String?
+    @NSManaged public var number: Int16
 
 }

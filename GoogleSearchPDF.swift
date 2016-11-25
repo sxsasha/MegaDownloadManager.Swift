@@ -85,7 +85,7 @@ class GoogleSearchPDF
 
                     if dictionary != nil
                     {
-                        self.parseDict(dict: dictionary)//Dictionary<String, Array<Dictionary<String, String>>>) [String: [[String:String]]]
+                        self.parseDict(dict: dictionary)
                     }
                 }
             }).resume()
